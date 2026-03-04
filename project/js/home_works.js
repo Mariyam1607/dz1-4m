@@ -21,16 +21,83 @@ gmailButton.onclick = () =>{
 const parentBlock = document.querySelector(".parent_block")
 const childBlock = document.querySelector(".child_block")
 
-let position = 0
+let posX = 0
+let posY = 0
+let direction = "right"
 
-function moveRight(){
-    const maxPosition = parentBlock.clientWidth - childBlock.clientWidth
 
-    if (position < maxPosition){
-        position += 2
-        childBlock.style.left = position + "px"
+const maxWidth = parentBlock.clientWidth - childBlock.offsetWidth
+const maxHeight = parentBlock.clientHeight - childBlock.offsetHeight
 
-        requestAnimationFrame(moveRight)
+const moveBlock = () => {
+    if (direction === "right") {
+        if (posX < maxWidth){
+            posX ++
+    } else {
+            direction = "bottom"
+        }
     }
+    if (direction === "bottom") {
+        if (posY < maxHeight){
+            posY ++
+        } else {
+            direction = "left"
+        }
+    }
+    else if (direction === "left") {
+        if (posX > 0) {
+            posX --
+        } else {
+            direction = "top"
+        }
+    }
+    else if (direction === "top") {
+        if (posY > 0) {
+            posY --
+        } else {
+            direction = "right"
+        }
+    }
+    childBlock.style.left = posX + "px"
+    childBlock.style.top = posY + "px"
+
+    requestAnimationFrame(moveBlock)
 }
-moveRight()
+moveBlock()
+
+
+// childBlock.style.left = `${posX}px` //`${position}px`
+// requestAnimationFrame(moveBlock)
+// }else if (posX >= maxWidth && posY < maxHeight){
+//     posY ++
+//     childBlock.style.top = `${posY}px`
+// }
+
+
+// STOPWATCH //
+
+const seconds = document.querySelector("#seconds")
+const btnStart= document.querySelector("#start")
+const btnStop = document.querySelector("#stop")
+const btnReset = document.querySelector("#reset")
+
+let count = 0
+let interval = null
+
+btnStart.addEventListener("click", () => {
+    if (interval !== null) return;
+    interval = setInterval(() => {
+        count ++
+        seconds.textContent = count
+    }, 1500)
+})
+btnStop.addEventListener("click", () => {
+    clearInterval(interval)
+    interval = null
+})
+btnReset.addEventListener("click", () => {
+    clearInterval(interval)
+    interval = null
+    count = 0
+    seconds.textContent = count
+})
