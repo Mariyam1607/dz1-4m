@@ -107,7 +107,7 @@ btnReset.addEventListener("click", () => {
 const charactersList = document.querySelector(".characters-list")
 
 const xhr = new XMLHttpRequest()
-xhr.open("GET", "/project/data/characters.json")
+xhr.open("GET", "../data/characters.json")
 xhr.setRequestHeader("Content-type", "application/json")
 xhr.send()
 
@@ -128,7 +128,7 @@ xhr.onload = () => {
     })
 }
 const xhr2 = new XMLHttpRequest()
-xhr2.open("GET", "/project/data/any.json")
+xhr2.open("GET", "../data/any.json")
 xhr2.setRequestHeader("Content-type", "application/json")
 xhr2.send()
 
