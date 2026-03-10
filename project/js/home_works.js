@@ -101,3 +101,37 @@ btnReset.addEventListener("click", () => {
     count = 0
     seconds.textContent = count
 })
+
+// CHARACTERS
+
+const charactersList = document.querySelector(".characters-list")
+
+const xhr = new XMLHttpRequest()
+xhr.open("GET", "/project/data/characters.json")
+xhr.setRequestHeader("Content-type", "application/json")
+xhr.send()
+
+xhr.onload = () => {
+    const characters = JSON.parse(xhr.response)
+    characters.forEach(character => {
+
+        const card = document.createElement("div")
+        card.classList.add("card")
+        card.innerHTML = `
+            <div class="photo">
+                <img src="${character.photo}">
+            </div>
+            <h3>${character.name}</h3>
+            <p>Age: ${character.age}</p>`
+
+        charactersList.append(card)
+    })
+}
+const xhr2 = new XMLHttpRequest()
+xhr2.open("GET", "/project/data/any.json")
+xhr2.setRequestHeader("Content-type", "application/json")
+xhr2.send()
+
+xhr2.onload = () => {
+    console.log(JSON.parse(xhr2.response))
+}
