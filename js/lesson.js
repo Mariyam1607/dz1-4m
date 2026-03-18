@@ -103,3 +103,57 @@ const converter = (element, targetElement1, targetElement2) => {
 converter(somInput, usdInput, eurInput)
 converter(usdInput, somInput, eurInput)
 converter(eurInput, somInput, usdInput)
+
+
+// CONVERTER //
+
+const cardBlock = document.querySelector(".card")
+const btnNext = document.querySelector("#btn-next")
+const btnPrev = document.querySelector("#btn-prev")
+
+let cardID = 1
+let maxID = 200
+
+function loadID(id) {
+    fetch(`http://jsonplaceholder.typicode.com/todos/${id}`)
+        .then((response) => response.json())
+        .then((data) => {
+            const {title, id, completed} = data
+            const color = completed ? "green" : "red"
+            const text = completed ? "completed" : "todo"
+            cardBlock.innerHTML = `
+            <p>${title}</p>
+            <p style="color: ${color}">
+                ${text}
+            </p>
+            <p>${id}</p>
+            `
+        })
+}
+loadID(cardID)
+
+btnNext.onclick = () => {
+    cardID++
+
+    if (cardID > maxID) {
+        cardID = 1
+    }
+    loadID(cardID)
+}
+btnPrev.addEventListener("click", () => {
+    cardID--
+
+    if (cardID < 1) {
+        cardID = maxID
+    }
+    loadID(cardID)
+})
+
+// GET ЗАПРОС НА POSTS //
+
+fetch("https://jsonplaceholder.typicode.com/posts")
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(data)
+    })
+
