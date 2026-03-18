@@ -115,7 +115,7 @@ let cardID = 1
 let maxID = 200
 
 function loadID(id) {
-    fetch(`http://jsonplaceholder.typicode.com/todos/${id}`)
+    fetch(`https://jsonplaceholder.typicode.com/todos/${id}`)
         .then((response) => response.json())
         .then((data) => {
             const {title, id, completed} = data
