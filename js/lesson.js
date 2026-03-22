@@ -72,20 +72,17 @@ const usdInput = document.querySelector("#usd")
 const eurInput = document.querySelector("#eur")
 
 const converter = (element, targetElement1, targetElement2) => {
-    element.oninput = () => {
-        const request = new XMLHttpRequest()
-        request.open("GET", "data/converter.json")
-        request.setRequestHeader("Content-type", "application/json")
-        request.send()
+    element.oninput = async () => {
+        try {
+            const response = await fetch("data/converter.json")
 
-        request.onload = () => {
-            const  data = JSON.parse(request.response)
+            const data = await response.json()
 
             if (element.id === "som") {
                 targetElement1.value = (element.value / data.usd).toFixed(2)
                 targetElement2.value = (element.value / data.eur).toFixed(2)
-
             }
+
             if (element.id === "usd") {
                 targetElement1.value = (element.value * data.usd).toFixed(2)
                 targetElement2.value = ((element.value * data.usd) / data.eur).toFixed(2)
@@ -95,14 +92,56 @@ const converter = (element, targetElement1, targetElement2) => {
                 targetElement1.value = (element.value * data.eur).toFixed(2)
                 targetElement2.value = ((element.value * data.eur) / data.usd).toFixed(2)
             }
-            if (!element.value) { somInput.value = usdInput.value = eurInput.value = "" }
 
+            if (!element.value) {
+                somInput.value = usdInput.value = eurInput.value = ""
+            }
+
+        } catch (error) {
+            console.error("Ошибка:", error)
         }
     }
 }
 converter(somInput, usdInput, eurInput)
 converter(usdInput, somInput, eurInput)
 converter(eurInput, somInput, usdInput)
+
+// const somInput = document.querySelector("#som")
+// const usdInput = document.querySelector("#usd")
+// const eurInput = document.querySelector("#eur")
+//
+// const converter = (element, targetElement1, targetElement2) => {
+//     element.oninput = () => {
+//         const request = new XMLHttpRequest()
+//         request.open("GET", "data/converter.json")
+//         request.setRequestHeader("Content-type", "application/json")
+//         request.send()
+//
+//         request.onload = () => {
+//             const  data = JSON.parse(request.response)
+//
+//             if (element.id === "som") {
+//                 targetElement1.value = (element.value / data.usd).toFixed(2)
+//                 targetElement2.value = (element.value / data.eur).toFixed(2)
+//
+//             }
+//             if (element.id === "usd") {
+//                 targetElement1.value = (element.value * data.usd).toFixed(2)
+//                 targetElement2.value = ((element.value * data.usd) / data.eur).toFixed(2)
+//             }
+//
+//             if (element.id === "eur") {
+//                 targetElement1.value = (element.value * data.eur).toFixed(2)
+//                 targetElement2.value = ((element.value * data.eur) / data.usd).toFixed(2)
+//             }
+//             if (!element.value) { somInput.value = usdInput.value = eurInput.value = "" }
+//
+//         }
+//     }
+// }
+// converter(somInput, usdInput, eurInput)
+// converter(usdInput, somInput, eurInput)
+// converter(eurInput, somInput, usdInput)
 
 
 // CONVERTER //
@@ -114,21 +153,26 @@ const btnPrev = document.querySelector("#btn-prev")
 let cardID = 1
 let maxID = 200
 
-function loadID(id) {
-    fetch(`https://jsonplaceholder.typicode.com/todos/${id}`)
-        .then((response) => response.json())
-        .then((data) => {
-            const {title, id, completed} = data
-            const color = completed ? "green" : "red"
-            const text = completed ? "completed" : "todo"
-            cardBlock.innerHTML = `
-            <p>${title}</p>
-            <p style="color: ${color}">
-                ${text}
-            </p>
-            <p>${id}</p>
-            `
-        })
+async function loadID(id) {
+    try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`)
+        if (!response.ok) {
+            throw new Error("Ошибка загрузки данных")
+        }
+        const data = await response.json()
+        const {title, id: todoID, completed} = data
+        const color = completed ? "green" : "red"
+        const text = completed ? "completed" : "todo"
+        cardBlock.innerHTML = `
+        <p>${title}</p>
+        <p style="color: ${color}">
+           ${text}
+        </p>
+        <p>${todoID}</p>
+        `
+    } catch (e) {
+        console.log(e)
+    }
 }
 loadID(cardID)
 
@@ -149,6 +193,41 @@ btnPrev.addEventListener("click", () => {
     loadID(cardID)
 })
 
+// function loadID(id) {
+//     fetch(`https://jsonplaceholder.typicode.com/todos/${id}`)
+//         .then((response) => response.json())
+//         .then((data) => {
+//             const {title, id, completed} = data
+//             const color = completed ? "green" : "red"
+//             const text = completed ? "completed" : "todo"
+//             cardBlock.innerHTML = `
+//             <p>${title}</p>
+//             <p style="color: ${color}">
+//                 ${text}
+//             </p>
+//             <p>${id}</p>
+//             `
+//         })
+// }
+// loadID(cardID)
+//
+// btnNext.onclick = () => {
+//     cardID++
+//
+//     if (cardID > maxID) {
+//         cardID = 1
+//     }
+//     loadID(cardID)
+// }
+// btnPrev.addEventListener("click", () => {
+//     cardID--
+//
+//     if (cardID < 1) {
+//         cardID = maxID
+//     }
+//     loadID(cardID)
+// })
+
 // GET ЗАПРОС НА POSTS //
 
 fetch("https://jsonplaceholder.typicode.com/posts")
@@ -157,3 +236,62 @@ fetch("https://jsonplaceholder.typicode.com/posts")
         console.log(data)
     })
 
+// WEATHER //
+
+const searchInput = document.querySelector("#searchInput")
+const searchButton = document.querySelector("#search")
+const city = document.querySelector(".city")
+const temp = document.querySelector(".temp")
+
+const VERSION = '2.5'
+const API_KEY = '291aa3950880603684e43c6cc36aed88'
+const BASE_API = `https://api.openweathermap.org/data/${VERSION}/weather`
+
+searchButton.onclick = async () => {
+    try {
+        if (searchInput.value !== "") {
+            const response = await fetch(`${BASE_API}?q=${searchInput.value}&units=metric&appid=${API_KEY}`)
+            const data = await response.json()
+            if (data.name) {
+                city.innerHTML = data.name
+                city.style.color = "white"
+                temp.innerHTML = Math.round(data.main.temp) + "&deg;C"
+            } else {
+                city.innerHTML = "Город с таким названием не найден"
+                temp.innerHTML = ""
+                city.style.color = "red"
+            }
+            searchInput.value = ""
+        } else  {
+            city.innerHTML = "Введите название города"
+            temp.innerHTML = ""
+            city.style.color = "red"
+        }
+    } catch (e) {
+        console.log(e)
+    }
+
+}
+
+// searchButton.onclick = () => {
+//     if (searchInput.value !== "") {
+//         fetch(`${BASE_API}?q=${searchInput.value}&units=metric&appid=${API_KEY}`)
+//             .then(response => response.json())
+//             .then(data => {
+//                 if (data.name) {
+//                     city.innerHTML = data.name
+//                     city.style.color = "white"
+//                     temp.innerHTML = Math.round(data.main.temp) + "&deg;C"
+//                 } else {
+//                     city.innerHTML = "Город с таким названием не найден"
+//                     temp.innerHTML = ""
+//                     city.style.color = "red"
+//                 }
+//             })
+//         searchInput.value = ""
+//     } else  {
+//         city.innerHTML = "Введите название города"
+//         temp.innerHTML = ""
+//         city.style.color = "red"
+//     }
+// }

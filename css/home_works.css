@@ -214,9 +214,13 @@
     gap: 10px;
     text-align: center;
 }
-.card p {
+.photo h3 {
     color: white;
-    font-size: 18px;
+    font-size: 16px;
+}
+.photo p {
+    color: white;
+    font-size: 14px;
 }
 
 .photo {
